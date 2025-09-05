@@ -31,26 +31,28 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 flex flex-col items-center justify-center p-4">
-    <div class="flex flex-col items-center p-6 bg-gray-800 rounded-2xl shadow-lg border border-gray-700">
-        <h1 class="text-4xl font-bold mb-4 text-center">Pay your Tax Angela!</h1>
-        <div class="flex flex-row justify-between w-full mb-4 px-2">
-            <div class="text-2xl font-bold">Total Stamp Duty: <span id="score">0</span></div>
-            <div class="text-2xl font-bold">Best: <span id="high-score">0</span></div>
+<body class="bg-gray-900 text-gray-100 flex flex-col items-center justify-center p-1">
+    <div class="flex flex-col items-center justify-center w-full h-full">
+        <div class="flex flex-col items-center p-6 bg-gray-800 rounded-2xl shadow-lg border border-gray-700">
+            <h1 class="text-4xl font-bold mb-4 text-center">Pay your Tax Angela!</h1>
+            <div class="flex flex-row justify-between w-full mb-4 px-2">
+                <div class="text-2xl font-bold">Tax Paid: £<span id="score">0</span></div>
+                <div class="text-2xl font-bold">High Score: <span id="high-score">0</span></div>
+            </div>
+            <canvas id="gameCanvas" class="rounded-xl border-4 border-red-500 shadow-xl"></canvas>
+            <div id="gameOverScreen" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-90 z-10 hidden rounded-xl p-4">
+                <h2 class="text-5xl font-bold text-red-500 mb-4 animate-bounce text-center">You missed a stamp duty bill! <br>Now you must resign!</h2>
+                <p class="text-2xl mb-4">Final Score: <span id="finalScore" class="font-bold text-3xl text-green-400">0</span></p>
+                <button id="playAgainBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                    Play Again
+                </button>
+            </div>
+            <div id="messageBox" class="absolute hidden bottom-16 bg-gray-700 text-white text-lg px-4 py-2 rounded-lg shadow-xl animate-fade-in-up"></div>
         </div>
-        <canvas id="gameCanvas" class="rounded-xl border-4 border-red-500 shadow-xl"></canvas>
-        <div id="gameOverScreen" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 bg-opacity-90 z-10 hidden rounded-xl p-4">
-            <h2 class="text-5xl font-bold text-red-500 mb-4 animate-bounce">You missed a stamp duty bill! Now you must resign!</h2>
-            <p class="text-2xl mb-4">Final Score: <span id="finalScore" class="font-bold text-3xl text-green-400">0</span></p>
-            <button id="playAgainBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
-                Play Again
-            </button>
-        </div>
-        <div id="messageBox" class="absolute hidden bottom-16 bg-gray-700 text-white text-lg px-4 py-2 rounded-lg shadow-xl animate-fade-in-up"></div>
+        <button id="musicToggleBtn" class="mt-4 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-full transition-transform transform hover:scale-105">
+            Toggle Music
+        </button>
     </div>
-    <button id="musicToggleBtn" class="mt-4 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-full transition-transform transform hover:scale-105">
-        Toggle Music
-    </button>
     <script>
         // --- Game Setup ---
         const canvas = document.getElementById('gameCanvas');
