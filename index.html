@@ -21,7 +21,8 @@
             overflow: hidden;
         }
         canvas {
-            background-color: #2e2e50;
+            background-image: url('bg.png');
+            background-repeat: repeat;
             border-radius: 1rem;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
             max-width: 95vw;
@@ -32,7 +33,7 @@
 </head>
 <body class="bg-gray-900 text-gray-100 flex flex-col items-center justify-center p-4">
     <div class="flex flex-col items-center p-6 bg-gray-800 rounded-2xl shadow-lg border border-gray-700">
-        <h1 class="text-4xl font-bold mb-4 text-center">Pay your Tax!</h1>
+        <h1 class="text-4xl font-bold mb-4 text-center">Pay your Tax Angela!</h1>
         <div class="flex flex-row justify-between w-full mb-4 px-2">
             <div class="text-2xl font-bold">Total Stamp Duty: <span id="score">0</span></div>
             <div class="text-2xl font-bold">Best: <span id="high-score">0</span></div>
@@ -47,7 +48,9 @@
         </div>
         <div id="messageBox" class="absolute hidden bottom-16 bg-gray-700 text-white text-lg px-4 py-2 rounded-lg shadow-xl animate-fade-in-up"></div>
     </div>
-
+    <button id="musicToggleBtn" class="mt-4 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-full transition-transform transform hover:scale-105">
+        Toggle Music
+    </button>
     <script>
         // --- Game Setup ---
         const canvas = document.getElementById('gameCanvas');
@@ -58,6 +61,7 @@
         const finalScoreEl = document.getElementById('finalScore');
         const playAgainBtn = document.getElementById('playAgainBtn');
         const messageBox = document.getElementById('messageBox');
+        const musicToggleBtn = document.getElementById('musicToggleBtn');
 
         let animationFrameId;
         let score = 0;
@@ -80,13 +84,17 @@
         let enemySpeed = 1.5;
         let enemySpawnInterval = 1000;
         let lastSpawnTime = 0;
-        const enemyWidth = 80;
+        const enemyWidth = 60;
         const enemyHeight = 40;
 
-        // Sound effects
+        // Sound effects and music
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let musicIntervalId;
+
         function playSound(freq, type = 'sine', duration = 0.1) {
-            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
 
@@ -100,6 +108,45 @@
             oscillator.start();
             gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
             oscillator.stop(audioCtx.currentTime + duration);
+        }
+
+        function playBackgroundMusic() {
+            if (musicIntervalId) {
+                clearInterval(musicIntervalId);
+            }
+            
+            const melody = [261.63, 329.63, 392.00, 523.25]; // C E G C (C Major Arpeggio)
+            let noteIndex = 0;
+
+            musicIntervalId = setInterval(() => {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.value = melody[noteIndex];
+                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); 
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+                oscillator.stop(audioCtx.currentTime + 0.3);
+
+                noteIndex = (noteIndex + 1) % melody.length;
+            }, 300);
+        }
+
+        function toggleMusic() {
+            if (musicIntervalId) {
+                clearInterval(musicIntervalId);
+                musicIntervalId = null;
+            } else {
+                playBackgroundMusic();
+            }
         }
 
         // --- Game Functions ---
@@ -148,7 +195,7 @@
                 return;
             }
 
-            // Clear canvas
+            // Clear canvas background before drawing.
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Spawn new enemies
@@ -199,6 +246,10 @@
                 highScoreEl.textContent = highScore;
                 showMessage("New High Score!", 3000);
             }
+            if(musicIntervalId) {
+                clearInterval(musicIntervalId);
+                musicIntervalId = null;
+            }
         }
 
         function resetGame() {
@@ -209,13 +260,17 @@
             enemySpeed = 1.5;
             enemySpawnInterval = 1000;
             gameOverScreen.classList.add('hidden');
+            if(audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            playBackgroundMusic();
             update(0);
         }
 
         // --- Event Listeners and Initializers ---
         setCanvasSize();
         highScoreEl.textContent = highScore;
-
+        
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
             if (isGameOver) return;
@@ -240,6 +295,7 @@
         });
         
         playAgainBtn.addEventListener('click', resetGame);
+        musicToggleBtn.addEventListener('click', toggleMusic);
         window.addEventListener('resize', setCanvasSize);
         window.onload = resetGame;
     </script>
