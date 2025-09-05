@@ -84,8 +84,8 @@
         let enemySpeed = 1.5;
         let enemySpawnInterval = 1000;
         let lastSpawnTime = 0;
-        const enemyWidth = 60;
-        const enemyHeight = 40;
+        const enemyWidth = 90;
+        const enemyHeight = 30;
 
         // Sound effects and music
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -137,7 +137,7 @@
                 oscillator.stop(audioCtx.currentTime + 0.3);
 
                 noteIndex = (noteIndex + 1) % melody.length;
-            }, 300);
+            }, 100);
         }
 
         function toggleMusic() {
